@@ -1,0 +1,12 @@
+---
+  name: "porcupine"
+  type: "trigger"
+  author: "Kalliope project team"
+
+  kalliope_supported_version:
+    - 0.4
+    - 0.5
+
+  tags:
+    - "trigger"
+    - "porcupine"

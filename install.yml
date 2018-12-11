@@ -1,0 +1,11 @@
+---
+- name: porcupine
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  become: true
+
+  tasks:
+    - name: "enum34"
+      pip:
+        name: enum34
