@@ -1,6 +1,11 @@
 # Porcupine trigger
 Trigger for Kalliope
 
+## Installation
+```bash
+kalliope install --git-url https://github.com/kalliope-project/kalliope_trigger_porcupine.git
+```
+
 ## Parameters
 
 | parameter    | required | type    | default | choices         | comment                                                                                          |
@@ -8,7 +13,7 @@ Trigger for Kalliope
 | keywords     | TRUE     | string  |         |                 |                                                                                                  |
 | ppn_file     | TRUE     | string  |         |                 | Path to the porcupine wake word. The path can be absolute or relative to the brain file          |
 | sensitivity  | FALSE    | string  | 0.5     | between 0 and 1 | Increasing the sensitivity value lead to better detection rate, but also higher false alarm rate |
-| input_device | FALSE    | integer | default | 				| Select the input input input device 															   |
+| input_device | FALSE    | integer | default | 				| Select the input device 															   |
 | tiny_keyword | FALSE 	  | string	| false   | true/false      | If true you can use tiny keywords, these accuracy is slightly lower than the standard model but it consumes considerably less resources |
 
 ## Example settings
