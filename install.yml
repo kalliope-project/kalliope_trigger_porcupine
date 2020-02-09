@@ -9,3 +9,4 @@
     - name: "enum34"
       pip:
         name: enum34
+        executable: pip3
