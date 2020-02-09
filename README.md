@@ -45,13 +45,8 @@ triggers:
 
 You can find existing keywords [here](https://github.com/Picovoice/Porcupine/tree/master/resources/keyword_files). 
 To create your own wake word visit [Picovoice Console](https://console.picovoice.ai/). 
-Note: You can only create wakewords for Linux x86_64 systems. Raspberry is restricted. 
-
-```yaml
-git clone https://github.com/Picovoice/Porcupine.git
-cd Porcupine
-tools/optimizer/linux/x86_64/pv_porcupine_optimizer -r resources -w "Kalliope" -p linux -o ~/
-```
+Note: 
+You can only create wakewords for Linux x86_64 systems. Raspberry is restricted. 
 
 ## Note
 
