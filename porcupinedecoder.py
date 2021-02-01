@@ -17,6 +17,7 @@
 import os
 import sys
 import struct
+import time
 from threading import Thread
 import pyaudio
 import logging
@@ -39,7 +40,6 @@ class HotwordDetector(Thread):
             keyword_file_paths,
             sensitivities,
             input_device_index,
-            tiny,
             detected_callback=None
             ):
 
@@ -60,11 +60,7 @@ class HotwordDetector(Thread):
         # For the raspberry there are 3 different types of libpv_porcupine.so provided, 
         # we use cortex-a53, tested on rpi 2 and 3.
         self._library_path = RESOURCE_FILE + "/%s/libpv_porcupine.so" % (settings.machine)
-        if not tiny:
-            self._model_file_path = RESOURCE_FILE + "/common/porcupine_params.pv"
-        else:
-            self._model_file_path = RESOURCE_FILE + "/common/porcupine_tiny_params.pv"
-        
+        self._model_file_path = RESOURCE_FILE + "/common/porcupine_params.pv"
         self._input_device_index = input_device_index
         self.kill_received = False
         self.paused = False
@@ -84,9 +80,6 @@ class HotwordDetector(Thread):
          Creates an input audio stream, initializes wake word detection (Porcupine) object, and monitors the audio
          stream for occurrences of the wake word(s).
          """
-
-        num_keywords = len(self._keyword_file_paths)
-
         keyword_names =\
             [os.path.basename(x).replace('.ppn', '').replace('_compressed', '').split('_')[0] for x in self._keyword_file_paths]
         
@@ -95,8 +88,8 @@ class HotwordDetector(Thread):
                         
         self.porcupine = Porcupine(
             library_path=self._library_path,
-            model_file_path=self._model_file_path,
-            keyword_file_paths=self._keyword_file_paths,
+            model_path=self._model_file_path,
+            keyword_paths=self._keyword_file_paths,
             sensitivities=self._sensitivities)
 
         self.pa = pyaudio.PyAudio()
@@ -112,25 +105,14 @@ class HotwordDetector(Thread):
 
         while not self.kill_received:
             if not self.paused:
-                callback = None
                 pcm = self.audio_stream.read(self.porcupine.frame_length)
                 pcm = struct.unpack_from("h" * self.porcupine.frame_length, pcm)
                 result = self.porcupine.process(pcm)
-                
-                if num_keywords == 1 and result:
-                    message = "Keyword " + str(keyword_names[0]) + " detected"
-                    callback = self.detected_callback
-                    
-                elif num_keywords > 1 and result >= 0:
+                if result >= 0:
                     message = "Keyword " + str(keyword_names[result]) + " detected"
-                    callback = self.detected_callback
-
-                if callback is not None:
-                    logger.debug(message)
                     Utils.print_info(message)
-                    callback()
-                    logger.debug("[Porcupine] detect voice break")
-                    break
+                    self.detected_callback()
+                    self.paused = True
 
     def terminate(self):
         """

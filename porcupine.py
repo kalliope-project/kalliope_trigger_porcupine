@@ -28,8 +28,6 @@ class Porcupine(Thread):
         self.kill_received = False
         # Get input device if set by the user.
         self.input_device_index = kwargs.get('input_device_index', None)
-        # Use tiny keywords if user set to True.
-        self.tiny_keyword = kwargs.get('tiny_keyword', False)
         # Callback function to call when hotword caught.
         self.callback = kwargs.get('callback', None)
         if self.callback is None:
@@ -61,11 +59,10 @@ class Porcupine(Thread):
         sensitivities = ", ".join(map(str, sensitivities))
 
         self.detector = HotwordDetector(keyword_file_paths=keyword_file_paths,
-                                                        sensitivities=sensitivities,
-                                                        input_device_index=self.input_device_index,
-                                                        tiny=self.tiny_keyword,
-                                                        detected_callback=self.callback
-                                                        )
+                                        sensitivities=sensitivities,
+                                        input_device_index=self.input_device_index,
+                                        detected_callback=self.callback
+                                        )
 
     def run(self):
         """
@@ -108,10 +105,10 @@ class Porcupine(Thread):
         ffi = _FFI()
         ffi.cdef("""
             /* from stdio.h */
-            FILE* fopen(const char* path, const char* mode);
-            int fclose(FILE* fp);
-            FILE* stderr;  /* GNU C library */
-            FILE* __stderrp;  /* Mac OS X */
+            extern  FILE* fopen(const char* path, const char* mode);
+            extern int fclose(FILE* fp);
+            extern FILE* stderr;  /* GNU C library */
+            extern FILE* __stderrp;  /* Mac OS X */
             """)
         stdio = ffi.dlopen(None)
         devnull = stdio.fopen(os.devnull.encode(), b'w')
