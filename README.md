@@ -29,7 +29,7 @@ triggers:
       keywords:
         - keyword: 
             ppn_file: "trigger/porcupine/porcupine_raspberrypi.ppn"
-#you need to put your own access_key generated on Picovoice Console (https://console.picovoice.ai/)
+#you need to put your own access_key generated on [Picovoice Console](https://console.picovoice.ai/)
       access_key: "kjzldfjsmfk=="
 
 # To use multiple keywords with different sensitivities
@@ -42,7 +42,7 @@ triggers:
         - keyword:
             ppn_file: "trigger/porcupine/blueberry_raspberrypi.ppn"
             sensitivity: 0.3
-      #you need to put your own access_key generated on Picovoice Console (https://console.picovoice.ai/)
+      #you need to put your own access_key generated on [Picovoice Console](https://console.picovoice.ai/)
       access_key: "kjzldfjsmfk=="
 ```
 
