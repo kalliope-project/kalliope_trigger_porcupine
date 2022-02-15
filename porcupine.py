@@ -37,40 +37,42 @@ class Porcupine(Thread):
 
         if self.keywords is None:
             raise MissingParameterException("At least one keyword is required with porcupine")
-        
+
+        self.access_key = kwargs.get('access_key',None)
+        if self.access_key is None:
+            raise MissingParameterException("You need an access key")
         keyword_file_paths = list()
         sensitivities = list()
-        
+
         for keyword in self.keywords:
-            path = Utils.get_real_file_path(keyword['keyword']['ppn_file'])  
+            path = Utils.get_real_file_path(keyword['keyword']['ppn_file'])
             try:
                 os.path.isfile(path)
-            except TypeError: 
+            except TypeError:
                 raise PorcupineWakeWordNotFound("The porcupine keyword at %s does not exist" % keyword['keyword']['ppn_file'])
             try:
                 sensitivity = keyword['keyword']['sensitivity']
             except KeyError:
                 sensitivity = 0.5
-            
+
             keyword_file_paths.append(path)
             sensitivities.append(sensitivity)
-            
         keyword_file_paths = ", ".join(keyword_file_paths)
         sensitivities = ", ".join(map(str, sensitivities))
-
-        self.detector = HotwordDetector(keyword_file_paths=keyword_file_paths,
+        self.detector = HotwordDetector(access_key=self.access_key,
+        				  keyword_file_paths=keyword_file_paths,
                                         sensitivities=sensitivities,
                                         input_device_index=self.input_device_index,
                                         detected_callback=self.callback
                                         )
 
+
     def run(self):
         """
-        Start the porcupine thread and wait for a Kalliope trigger word
+         Start the porcupine thread and wait for a Kalliope trigger word
         :return:
-        """
-        # start porcupine loop forever
-        self.detector.daemon = True
+         """
+        self.detector.daemon= True
         self.detector.start()
         self.detector.join()
 
@@ -91,7 +93,7 @@ class Porcupine(Thread):
     def stop(self):
         """
         Kill the porcupine process
-        :return: 
+        :return:
         """
         logger.debug("[Porcupine] Killing porcupine process")
         self.interrupted = True
