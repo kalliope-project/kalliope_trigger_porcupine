@@ -37,6 +37,7 @@ RESOURCE_FILE = os.path.join(TOP_DIR, "lib")
 class HotwordDetector(Thread):
     def __init__(
             self,
+            access_key,
             keyword_file_paths,
             sensitivities,
             input_device_index,
@@ -56,11 +57,12 @@ class HotwordDetector(Thread):
         super(HotwordDetector, self).__init__()
         sl = SettingLoader()
         settings = sl.settings
-        
-        # For the raspberry there are 3 different types of libpv_porcupine.so provided, 
+
+        # For the raspberry there are 3 different types of libpv_porcupine.so provided,
         # we use cortex-a53, tested on rpi 2 and 3.
-        self._library_path = RESOURCE_FILE + "/%s/libpv_porcupine.so" % (settings.machine)
-        self._model_file_path = RESOURCE_FILE + "/common/porcupine_params.pv"
+        self.access_key=access_key
+        self._library_path = RESOURCE_FILE + "/%s/libnew.so" % (settings.machine)
+        self._model_file_path = RESOURCE_FILE + "/common/porcupine_params_fr.pv"
         self._input_device_index = input_device_index
         self.kill_received = False
         self.paused = False
@@ -82,11 +84,12 @@ class HotwordDetector(Thread):
          """
         keyword_names =\
             [os.path.basename(x).replace('.ppn', '').replace('_compressed', '').split('_')[0] for x in self._keyword_file_paths]
-        
+
         for keyword_name, sensitivity in zip(keyword_names, self._sensitivities):
             logger.debug('Listening for %s with sensitivity of %s' % (keyword_name, sensitivity))
-                        
+
         self.porcupine = Porcupine(
+        access_key=self.access_key,
             library_path=self._library_path,
             model_path=self._model_file_path,
             keyword_paths=self._keyword_file_paths,
@@ -100,7 +103,7 @@ class HotwordDetector(Thread):
             input=True,
             frames_per_buffer=self.porcupine.frame_length,
             input_device_index=self._input_device_index)
-                
+
         logger.debug("[Porcupine] detecting...")
 
         while not self.kill_received:
@@ -121,7 +124,7 @@ class HotwordDetector(Thread):
         """
         if self.porcupine is not None:
                 self.porcupine.delete()
-        
+
         if self.audio_stream is not None:
             self.audio_stream.close()
 
